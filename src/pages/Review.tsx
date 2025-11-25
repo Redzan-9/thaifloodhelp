@@ -353,6 +353,18 @@ const Review = () => {
               </select>
             </div>
 
+            {/* Validation Alert */}
+            {(!formData.name || formData.name.trim() === '' || !formData.address || formData.address.trim() === '') && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  กรุณากรอกข้อมูลที่จำเป็น: 
+                  {(!formData.name || formData.name.trim() === '') && ' ชื่อ'}
+                  {(!formData.address || formData.address.trim() === '') && ' ที่อยู่'}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="flex gap-4">
               <Button
                 onClick={handleSave}
