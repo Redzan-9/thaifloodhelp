@@ -356,7 +356,13 @@ const Review = () => {
             <div className="flex gap-4">
               <Button
                 onClick={handleSave}
-                disabled={isSaving || !formData.name || !formData.address}
+                disabled={
+                  isSaving || 
+                  !formData.name?.trim() || 
+                  formData.name.trim() === '-' ||
+                  !formData.address?.trim() || 
+                  formData.address.trim() === '-'
+                }
                 size="lg"
                 className="flex-1"
               >
