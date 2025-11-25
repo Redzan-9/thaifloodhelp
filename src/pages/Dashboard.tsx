@@ -34,7 +34,9 @@ interface Report {
   phone: string[];
   number_of_adults: number;
   number_of_children: number;
+  number_of_infants: number;
   number_of_seniors: number;
+  number_of_patients: number;
   health_condition: string;
   help_needed: string;
   urgency_level: number;
@@ -241,7 +243,9 @@ const Dashboard = () => {
                       <TableHead>เบอร์โทร</TableHead>
                       <TableHead className="text-center">ผู้ใหญ่</TableHead>
                       <TableHead className="text-center">เด็ก</TableHead>
+                      <TableHead className="text-center">ทารก</TableHead>
                       <TableHead className="text-center">ผู้สูงอายุ</TableHead>
+                      <TableHead className="text-center">ผู้ป่วย</TableHead>
                       <TableHead>ความช่วยเหลือ</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -262,7 +266,9 @@ const Dashboard = () => {
                         </TableCell>
                         <TableCell className="text-center">{report.number_of_adults}</TableCell>
                         <TableCell className="text-center">{report.number_of_children}</TableCell>
+                        <TableCell className="text-center">{report.number_of_infants || 0}</TableCell>
                         <TableCell className="text-center">{report.number_of_seniors}</TableCell>
+                        <TableCell className="text-center">{report.number_of_patients || 0}</TableCell>
                         <TableCell className="max-w-xs truncate">
                           {report.help_needed || '-'}
                         </TableCell>

@@ -30,6 +30,8 @@ export type Database = {
           name: string
           number_of_adults: number | null
           number_of_children: number | null
+          number_of_infants: number | null
+          number_of_patients: number | null
           number_of_seniors: number | null
           phone: string[] | null
           raw_message: string
@@ -53,6 +55,8 @@ export type Database = {
           name: string
           number_of_adults?: number | null
           number_of_children?: number | null
+          number_of_infants?: number | null
+          number_of_patients?: number | null
           number_of_seniors?: number | null
           phone?: string[] | null
           raw_message: string
@@ -76,6 +80,8 @@ export type Database = {
           name?: string
           number_of_adults?: number | null
           number_of_children?: number | null
+          number_of_infants?: number | null
+          number_of_patients?: number | null
           number_of_seniors?: number | null
           phone?: string[] | null
           raw_message?: string
