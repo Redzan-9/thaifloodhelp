@@ -21,9 +21,9 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
+    if (!GEMINI_API_KEY) {
+      throw new Error('GEMINI_API_KEY is not configured');
     }
 
     console.log('Processing message extraction...');
@@ -70,95 +70,104 @@ Output: {
 
 REMEMBER: When in doubt, leave it empty. Wrong data is worse than no data in a disaster relief system.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-pro',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `แยกข้อมูลจากข้อความนี้:\n\n${rawMessage}` }
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { text: systemPrompt },
+              { text: `แยกข้อมูลจากข้อความนี้:\n\n${rawMessage}` }
+            ]
+          }
         ],
         tools: [
           {
-            type: 'function',
-            function: {
-              name: 'extract_report_data',
-              description: 'แยกข้อมูลผู้ประสบภัยจากข้อความ',
-              parameters: {
-                type: 'object',
-                properties: {
-                  reporter_name: { 
-                    type: 'string', 
-                    description: 'ชื่อของผู้รายงาน/แจ้งเรื่อง ที่มาจากชื่อโปรไฟล์หรือลายเซ็นในข้อความ' 
+            function_declarations: [
+              {
+                name: 'extract_report_data',
+                description: 'แยกข้อมูลผู้ประสบภัยจากข้อความ',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    reporter_name: { 
+                      type: 'string', 
+                      description: 'ชื่อของผู้รายงาน/แจ้งเรื่อง ที่มาจากชื่อโปรไฟล์หรือลายเซ็นในข้อความ' 
+                    },
+                    last_contact_at: { 
+                      type: 'string', 
+                      description: 'วันเวลาที่ติดต่อล่าสุด ในรูปแบบ ISO 8601 (ถ้ามีระบุ เช่น "วันที่ 22" "เมื่อวาน")' 
+                    },
+                    name: { 
+                      type: 'string', 
+                      description: 'ชื่อของผู้ประสบภัย' 
+                    },
+                    lastname: { 
+                      type: 'string', 
+                      description: 'นามสกุลของผู้ประสบภัย' 
+                    },
+                    address: { 
+                      type: 'string', 
+                      description: 'ที่อยู่แบบละเอียด รวมหมู่บ้าน ซอย ถนน ตำบล อำเภอ จังหวัด' 
+                    },
+                    location_lat: { 
+                      type: 'string', 
+                      description: 'ละติจูด (ถ้ามี)' 
+                    },
+                    location_long: { 
+                      type: 'string', 
+                      description: 'ลองติจูด (ถ้ามี)' 
+                    },
+                    phone: { 
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'เบอร์โทรศัพท์ทั้งหมด' 
+                    },
+                    number_of_adults: { 
+                      type: 'integer', 
+                      description: 'จำนวนผู้ใหญ่' 
+                    },
+                    number_of_children: { 
+                      type: 'integer', 
+                      description: 'จำนวนเด็ก (อายุต่ำกว่า 18 ปี)' 
+                    },
+                    number_of_seniors: { 
+                      type: 'integer', 
+                      description: 'จำนวนผู้สูงอายุ (อายุมากกว่า 60 ปี)' 
+                    },
+                    health_condition: { 
+                      type: 'string', 
+                      description: 'ภาวะสุขภาพพิเศษ เช่น ป่วย พิการ ติดเตียง' 
+                    },
+                    help_needed: { 
+                      type: 'string', 
+                      description: 'ความช่วยเหลือที่ต้องการ เช่น เรือ อาหาร น้ำดื่ม ยา' 
+                    },
+                    additional_info: { 
+                      type: 'string', 
+                      description: 'ข้อมูลเพิ่มเติมที่สำคัญอื่นๆ ที่ควรบันทึก' 
+                    },
+                    urgency_level: { 
+                      type: 'integer', 
+                      description: 'ระดับความเร่งด่วน 1-5 ตามเกณฑ์ที่กำหนด'
+                    }
                   },
-                  last_contact_at: { 
-                    type: 'string', 
-                    description: 'วันเวลาที่ติดต่อล่าสุด ในรูปแบบ ISO 8601 (ถ้ามีระบุ เช่น "วันที่ 22" "เมื่อวาน")' 
-                  },
-                  name: { 
-                    type: 'string', 
-                    description: 'ชื่อของผู้ประสบภัย' 
-                  },
-                  lastname: { 
-                    type: 'string', 
-                    description: 'นามสกุลของผู้ประสบภัย' 
-                  },
-                  address: { 
-                    type: 'string', 
-                    description: 'ที่อยู่แบบละเอียด รวมหมู่บ้าน ซอย ถนน ตำบล อำเภอ จังหวัด' 
-                  },
-                  location_lat: { 
-                    type: 'string', 
-                    description: 'ละติจูด (ถ้ามี)' 
-                  },
-                  location_long: { 
-                    type: 'string', 
-                    description: 'ลองติจูด (ถ้ามี)' 
-                  },
-                  phone: { 
-                    type: 'array',
-                    items: { type: 'string' },
-                    description: 'เบอร์โทรศัพท์ทั้งหมด' 
-                  },
-                  number_of_adults: { 
-                    type: 'integer', 
-                    description: 'จำนวนผู้ใหญ่' 
-                  },
-                  number_of_children: { 
-                    type: 'integer', 
-                    description: 'จำนวนเด็ก (อายุต่ำกว่า 18 ปี)' 
-                  },
-                  number_of_seniors: { 
-                    type: 'integer', 
-                    description: 'จำนวนผู้สูงอายุ (อายุมากกว่า 60 ปี)' 
-                  },
-                  health_condition: { 
-                    type: 'string', 
-                    description: 'ภาวะสุขภาพพิเศษ เช่น ป่วย พิการ ติดเตียง' 
-                  },
-                  help_needed: { 
-                    type: 'string', 
-                    description: 'ความช่วยเหลือที่ต้องการ เช่น เรือ อาหาร น้ำดื่ม ยา' 
-                  },
-                  additional_info: { 
-                    type: 'string', 
-                    description: 'ข้อมูลเพิ่มเติมที่สำคัญอื่นๆ ที่ควรบันทึก' 
-                  },
-                  urgency_level: { 
-                    type: 'integer', 
-                    description: 'ระดับความเร่งด่วน 1-5 ตามเกณฑ์ที่กำหนด'
-                  }
-                },
-                additionalProperties: false
+                  required: []
+                }
               }
-            }
+            ]
           }
         ],
-        tool_choice: { type: 'function', function: { name: 'extract_report_data' } }
+        tool_config: {
+          function_calling_config: {
+            mode: 'ANY',
+            allowed_function_names: ['extract_report_data']
+          }
+        }
       }),
     });
 
@@ -169,29 +178,23 @@ REMEMBER: When in doubt, leave it empty. Wrong data is worse than no data in a d
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'ระบบต้องเติมเครดิต กรุณาติดต่อผู้ดูแลระบบ' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
       const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
-      throw new Error(`AI Gateway error: ${response.status}`);
+      console.error('Gemini API error:', response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const data = await response.json();
     console.log('AI Response:', JSON.stringify(data));
 
-    // Extract all function calls (multiple reports from one message)
-    const toolCalls = data.choices?.[0]?.message?.tool_calls;
-    if (!toolCalls || toolCalls.length === 0) {
+    // Extract function calls from Gemini format
+    const functionCalls = data.candidates?.[0]?.content?.parts?.filter((part: any) => part.functionCall);
+    if (!functionCalls || functionCalls.length === 0) {
       throw new Error('No function call in AI response');
     }
 
     // Process all extracted reports
-    const extractedReports = toolCalls.map((toolCall: any) => {
-      const extractedData = JSON.parse(toolCall.function.arguments);
+    const extractedReports = functionCalls.map((part: any) => {
+      const extractedData = part.functionCall.args;
       
       return {
         ...extractedData,
