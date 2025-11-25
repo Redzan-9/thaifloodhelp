@@ -372,6 +372,9 @@ const Dashboard = () => {
             <ArrowLeft className="mr-2 h-4 w-4" />
             กลับไปหน้าแรก
           </Button>
+          <Button variant="outline" onClick={() => navigate('/help')}>
+            📖 คู่มือการใช้งาน
+          </Button>
         </div>
 
         <div className="text-center space-y-2">
