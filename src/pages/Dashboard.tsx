@@ -442,11 +442,11 @@ const Dashboard = () => {
                                     <div>
                                       <h4 className="font-semibold mb-2">ข้อมูลทั่วไป</h4>
                                       <div className="space-y-1 text-sm">
-                                        <p><span className="font-medium">ชื่อ:</span> {report.name} {report.lastname}</p>
-                                        <p><span className="font-medium">ผู้รายงาน:</span> {report.reporter_name || '-'}</p>
-                                        <p><span className="font-medium">ที่อยู่:</span> {report.address || '-'}</p>
-                                        <p><span className="font-medium">เบอร์โทร:</span> {report.phone?.length > 0 ? report.phone.join(', ') : '-'}</p>
-                                        <p><span className="font-medium">ตำแหน่ง:</span> {report.location_lat && report.location_long ? `${report.location_lat}, ${report.location_long}` : '-'}</p>
+                                        <p className="break-words"><span className="font-medium">ชื่อ:</span> {report.name} {report.lastname}</p>
+                                        <p className="break-words"><span className="font-medium">ผู้รายงาน:</span> {report.reporter_name || '-'}</p>
+                                        <p className="break-words"><span className="font-medium">ที่อยู่:</span> {report.address || '-'}</p>
+                                        <p className="break-words"><span className="font-medium">เบอร์โทร:</span> {report.phone?.length > 0 ? report.phone.join(', ') : '-'}</p>
+                                        <p className="break-words"><span className="font-medium">ตำแหน่ง:</span> {report.location_lat && report.location_long ? `${report.location_lat}, ${report.location_long}` : '-'}</p>
                                       </div>
                                     </div>
                                     <div>
@@ -462,9 +462,9 @@ const Dashboard = () => {
                                     <div>
                                       <h4 className="font-semibold mb-2">สุขภาพและความช่วยเหลือ</h4>
                                       <div className="space-y-1 text-sm">
-                                        <p><span className="font-medium">อาการ:</span> {report.health_condition || '-'}</p>
-                                        <p><span className="font-medium">ความช่วยเหลือ:</span> {report.help_needed || '-'}</p>
-                                        <p><span className="font-medium">ประเภทความช่วยเหลือ:</span> {report.help_categories?.length > 0 ? report.help_categories.join(', ') : '-'}</p>
+                                        <p className="break-words"><span className="font-medium">อาการ:</span> {report.health_condition || '-'}</p>
+                                        <p className="break-words"><span className="font-medium">ความช่วยเหลือ:</span> {report.help_needed || '-'}</p>
+                                        <p className="break-words"><span className="font-medium">ประเภทความช่วยเหลือ:</span> {report.help_categories?.length > 0 ? report.help_categories.join(', ') : '-'}</p>
                                       </div>
                                     </div>
                                     <div>
@@ -472,21 +472,21 @@ const Dashboard = () => {
                                       <div className="space-y-1 text-sm">
                                         <p><span className="font-medium">สถานะ:</span> {report.status || '-'}</p>
                                         <p><span className="font-medium">ระดับความเร่งด่วน:</span> {report.urgency_level}</p>
-                                        <p><span className="font-medium">วันที่บันทึก:</span> {new Date(report.created_at).toLocaleString('th-TH')}</p>
-                                        <p><span className="font-medium">แก้ไขล่าสุด:</span> {new Date(report.updated_at).toLocaleString('th-TH')}</p>
+                                        <p className="break-words"><span className="font-medium">วันที่บันทึก:</span> {new Date(report.created_at).toLocaleString('th-TH')}</p>
+                                        <p className="break-words"><span className="font-medium">แก้ไขล่าสุด:</span> {new Date(report.updated_at).toLocaleString('th-TH')}</p>
                                       </div>
                                     </div>
                                   </div>
                                   {report.additional_info && (
                                     <div>
                                       <h4 className="font-semibold mb-2">ข้อมูลเพิ่มเติม</h4>
-                                      <p className="text-sm">{report.additional_info}</p>
+                                      <p className="text-sm whitespace-pre-wrap break-words">{report.additional_info}</p>
                                     </div>
                                   )}
                                   <div>
                                     <h4 className="font-semibold mb-2">ข้อความต้นฉบับ (Raw Data)</h4>
-                                    <div className="bg-background rounded-md p-4 border">
-                                      <pre className="text-sm whitespace-pre-wrap break-words">{report.raw_message}</pre>
+                                    <div className="bg-background rounded-md p-4 border max-w-full overflow-x-auto">
+                                      <pre className="text-sm whitespace-pre-wrap break-words font-mono">{report.raw_message}</pre>
                                     </div>
                                   </div>
                                 </div>
