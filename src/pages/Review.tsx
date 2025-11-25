@@ -25,6 +25,8 @@ interface ExtractedData {
   number_of_adults: number;
   number_of_children: number;
   number_of_seniors: number;
+  number_of_patients: number;
+  number_of_infants: number;
   health_condition: string;
   help_needed: string;
   additional_info: string;
@@ -122,6 +124,8 @@ const Review = () => {
         location_long: formData.location_long ? parseFloat(formData.location_long) : null,
         last_contact_at: validLastContact,
         embedding: embeddingError ? null : embeddingData.embedding,
+        number_of_patients: formData.number_of_patients || 0,
+        number_of_infants: formData.number_of_infants || 0,
       };
 
       const { error } = await supabase.from('reports').insert([dataToSave]);
@@ -350,7 +354,7 @@ const Review = () => {
 
             <div className="space-y-4">
               <Label>จำนวนผู้ประสบภัย</Label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="adults" className="text-sm text-muted-foreground">ผู้ใหญ่</Label>
                   <Input
@@ -374,6 +378,17 @@ const Review = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="infants" className="text-sm text-muted-foreground">ทารก</Label>
+                  <Input
+                    id="infants"
+                    type="number"
+                    min="0"
+                    value={formData.number_of_infants || 0}
+                    onChange={(e) => setFormData({ ...formData, number_of_infants: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="seniors" className="text-sm text-muted-foreground">ผู้สูงอายุ</Label>
                   <Input
                     id="seniors"
@@ -381,6 +396,17 @@ const Review = () => {
                     min="0"
                     value={formData.number_of_seniors}
                     onChange={(e) => setFormData({ ...formData, number_of_seniors: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="patients" className="text-sm text-muted-foreground">ผู้ป่วย</Label>
+                  <Input
+                    id="patients"
+                    type="number"
+                    min="0"
+                    value={formData.number_of_patients || 0}
+                    onChange={(e) => setFormData({ ...formData, number_of_patients: parseInt(e.target.value) || 0 })}
                   />
                 </div>
               </div>

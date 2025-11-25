@@ -39,10 +39,10 @@ serve(async (req) => {
 
 URGENCY LEVEL CLASSIFICATION (urgency_level):
 Level 1: Not flooded yet / warning only
-Level 2: Adults only, no children/seniors, ground floor flooded
+Level 2: Adults only, no children/seniors/infants/patients, ground floor flooded
 Level 3: Has children OR seniors, OR water reached second floor
-Level 4: Very young children (<3 years) OR people unable to self-rescue, not yet critical
-Level 5: CRITICAL - water at roof level, infants, elderly unable to self-rescue, OR medical emergency
+Level 4: Very young children (<3 years) OR infants OR patients OR people unable to self-rescue, not yet critical
+Level 5: CRITICAL - water at roof level, infants in danger, patients with serious conditions, elderly unable to self-rescue, OR medical emergency
 
 EXTRACTION GUIDELINES:
 - reporter_name: Extract from social media profile name or signature in message (empty if not present)
@@ -52,6 +52,8 @@ EXTRACTION GUIDELINES:
 - phone: Array of phone numbers only if present (empty array if not present)
 - location_lat/location_long: Only if GPS coordinates given (empty if not present)
 - number_of_adults/children/seniors: Count only if explicitly stated (0 if not present)
+- number_of_infants: Count babies/infants (0-2 years old) only if stated (0 if not present)
+- number_of_patients: Count people with medical conditions only if stated (0 if not present)
 - health_condition: Only mention if health issues are stated like "ป่วย", "โรคหัวใจ" (empty if not present)
 - help_needed: Only if specifically requested like "ต้องการเรือ", "ขาดอาหาร" (empty if not present)
 - additional_info: Other important details not covered above (empty if not present)
@@ -135,9 +137,17 @@ REMEMBER: When in doubt, leave it empty. Wrong data is worse than no data in a d
                       type: 'integer', 
                       description: 'จำนวนเด็ก (อายุต่ำกว่า 18 ปี)' 
                     },
+                    number_of_infants: { 
+                      type: 'integer', 
+                      description: 'จำนวนทารก (อายุ 0-2 ปี)' 
+                    },
                     number_of_seniors: { 
                       type: 'integer', 
                       description: 'จำนวนผู้สูงอายุ (อายุมากกว่า 60 ปี)' 
+                    },
+                    number_of_patients: { 
+                      type: 'integer', 
+                      description: 'จำนวนผู้ป่วย หรือผู้ที่มีภาวะสุขภาพพิเศษ' 
                     },
                     health_condition: { 
                       type: 'string', 
@@ -264,9 +274,11 @@ REMEMBER: When in doubt, leave it empty. Wrong data is worse than no data in a d
             location_lat: extractedData.location_lat || '',
             location_long: extractedData.location_long || '',
             phone: extractedData.phone || [],
-            number_of_adults: extractedData.number_of_adults || 0,
-            number_of_children: extractedData.number_of_children || 0,
-            number_of_seniors: extractedData.number_of_seniors || 0,
+        number_of_adults: extractedData.number_of_adults || 0,
+        number_of_children: extractedData.number_of_children || 0,
+        number_of_infants: extractedData.number_of_infants || 0,
+        number_of_seniors: extractedData.number_of_seniors || 0,
+        number_of_patients: extractedData.number_of_patients || 0,
             health_condition: extractedData.health_condition || '',
             help_needed: extractedData.help_needed || '',
             additional_info: extractedData.additional_info || '',
