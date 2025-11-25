@@ -56,10 +56,12 @@ EXTRACTION GUIDELINES:
 - address: Copy exact address from message, preserve all details (empty if not present)
 - phone: Array of phone numbers only if present (empty array if not present)
 - location_lat/location_long: Only if GPS coordinates given (empty if not present)
-- number_of_adults/children/seniors: Count only if explicitly stated (0 if not present)
+- number_of_adults: Count all adults (18+ years) including patients, parents, siblings, relatives mentioned. If message says "มีแม่ พ่อ น้องชาย" count as 3 adults. Patients who are adults count in BOTH number_of_adults AND number_of_patients.
+- number_of_children: Count children (3-17 years) only if explicitly mentioned (0 if not present)
+- number_of_seniors: Count elderly people (60+ years) only if explicitly mentioned (0 if not present)
 - number_of_infants: Count babies/infants (0-2 years old) only if stated (0 if not present)
-- number_of_patients: Count people with medical conditions only if stated (0 if not present)
-- health_condition: Only mention if health issues are stated like "ป่วย", "โรคหัวใจ" (empty if not present)
+- number_of_patients: Count people with medical conditions (ป่วย, ติดเตียง, โรคประจำตัว) separately. If patient is an adult, they should be counted in BOTH number_of_patients AND number_of_adults.
+- health_condition: Only mention if health issues are stated like "ป่วย", "ติดเตียง", "โรคหัวใจ" (empty if not present)
 - help_needed: Only if specifically requested like "ต้องการเรือ", "ขาดอาหาร" (empty if not present)
 - help_categories: Array of category IDs for help types mentioned:
   * drowning (จมน้ำ) - person in water/drowning
