@@ -421,24 +421,27 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            กลับไปหน้าแรก
-          </Button>
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-start">
+            <Button variant="ghost" onClick={() => navigate('/')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              กลับไปหน้าแรก
+            </Button>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap justify-start sm:justify-end">
             <Button
               variant="outline"
               onClick={handleShare}
+              size="sm"
               className="bg-[#06C755] hover:bg-[#05b34c] text-white border-[#06C755] hover:border-[#05b34c]"
             >
               <Share2 className="mr-2 h-4 w-4" />
               แชร์ผ่าน LINE
             </Button>
-            <Button variant="outline" onClick={() => navigate('/map')}>
+            <Button variant="outline" size="sm" onClick={() => navigate('/map')}>
               🗺️ แผนที่
             </Button>
-            <Button variant="outline" onClick={() => navigate('/help')}>
+            <Button variant="outline" size="sm" onClick={() => navigate('/help')}>
               📖 คู่มือการใช้งาน
             </Button>
           </div>
@@ -606,16 +609,18 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div className="text-sm text-muted-foreground">
             ทั้งหมด {sortedReports.length} รายการ
             {totalPages > 1 && ` • หน้า ${currentPage}/${totalPages}`}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap w-full sm:w-auto">
             <Button
               onClick={handleRefresh}
               variant="outline"
+              size="sm"
               disabled={isRefreshing}
+              className="flex-1 sm:flex-none"
             >
               <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               {isRefreshing ? 'กำลังรีเฟรช...' : 'รีเฟรช'}
@@ -623,7 +628,9 @@ const Dashboard = () => {
             <Button
               onClick={handleConvertMapLinks}
               variant="outline"
+              size="sm"
               disabled={isConvertingMapLinks}
+              className="flex-1 sm:flex-none"
             >
               {isConvertingMapLinks ? (
                 <>
@@ -640,7 +647,9 @@ const Dashboard = () => {
             <Button
               onClick={exportToCSV}
               variant="outline"
+              size="sm"
               disabled={filteredReports.length === 0}
+              className="flex-1 sm:flex-none"
             >
               <Download className="mr-2 h-4 w-4" />
               ส่งออก CSV
@@ -987,16 +996,17 @@ const Dashboard = () => {
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between p-4 border-t">
-                    <div className="text-sm text-muted-foreground">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 border-t">
+                    <div className="text-sm text-muted-foreground text-center sm:text-left">
                       แสดง {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, sortedReports.length)} จาก {sortedReports.length} รายการ
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap justify-center">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setCurrentPage(1)}
                         disabled={currentPage === 1}
+                        className="hidden sm:inline-flex"
                       >
                         หน้าแรก
                       </Button>
@@ -1008,7 +1018,7 @@ const Dashboard = () => {
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
-                      <span className="text-sm px-2">
+                      <span className="text-sm px-2 min-w-[80px] text-center">
                         {currentPage} / {totalPages}
                       </span>
                       <Button
@@ -1024,6 +1034,7 @@ const Dashboard = () => {
                         size="sm"
                         onClick={() => setCurrentPage(totalPages)}
                         disabled={currentPage === totalPages}
+                        className="hidden sm:inline-flex"
                       >
                         หน้าสุดท้าย
                       </Button>
