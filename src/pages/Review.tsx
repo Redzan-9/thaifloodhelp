@@ -209,15 +209,36 @@ const Review = () => {
             { body: { address: formData.address } }
           );
           
-          if (!geocodeError && geocodeData.success) {
+          console.log('Geocode response:', geocodeData, geocodeError);
+          
+          if (!geocodeError && geocodeData && geocodeData.success) {
             finalLat = geocodeData.lat;
             finalLng = geocodeData.lng;
             finalMapLink = geocodeData.map_link;
+            
+            // Update form data so user can see the coordinates
+            setFormData({
+              ...formData,
+              location_lat: geocodeData.lat.toString(),
+              location_long: geocodeData.lng.toString(),
+              map_link: geocodeData.map_link
+            });
+            
             console.log('Successfully geocoded address:', geocodeData);
-            toast.success('แปลงที่อยู่เป็นพิกัดสำเร็จ');
+            toast.success('แปลงที่อยู่เป็นพิกัดสำเร็จ', {
+              description: `lat: ${geocodeData.lat}, lng: ${geocodeData.lng}`
+            });
+          } else {
+            console.warn('Geocoding failed or returned no results:', geocodeError || geocodeData);
+            toast.warning('ไม่สามารถแปลงที่อยู่เป็นพิกัดได้', {
+              description: 'ระบบจะบันทึกโดยไม่มีตำแหน่ง'
+            });
           }
         } catch (err) {
           console.error('Error geocoding address:', err);
+          toast.error('เกิดข้อผิดพลาดในการแปลงที่อยู่', {
+            description: err instanceof Error ? err.message : 'กรุณาลองใหม่อีกครั้ง'
+          });
           // Continue with save even if geocoding fails
         }
       }
