@@ -112,6 +112,13 @@ const Landing = () => {
 
           <motion.p 
             variants={itemVariants}
+            className="text-2xl md:text-3xl text-white/90 mb-4 font-semibold"
+          >
+            เมื่อ AI กับมนุษย์ ทำงานร่วมกัน เพื่อช่วยผู้ประสบภัย
+          </motion.p>
+
+          <motion.p 
+            variants={itemVariants}
             className="text-lg md:text-xl text-white/80 mb-12"
           >
             ทุกวินาที • มีคนรอความช่วยเหลือ

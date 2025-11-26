@@ -22,16 +22,17 @@ const Navbar = () => {
       label: "ช่วยใส่ข้อมูล",
       icon: Home,
       description: "ช่วยใส่ข้อมูลจาก social",
+      isPrimary: true,
     },
     {
       path: "/dashboard",
-      label: "Dashboard",
+      label: "ข้อมูลผู้ต้องการความช่วยเหลือ",
       icon: Database,
       description: "ดูข้อมูลทั้งหมด",
     },
     {
       path: "/stats",
-      label: "สถิติ",
+      label: "Dashboard",
       icon: BarChart3,
       description: "สถิติและรายงาน",
     },
@@ -75,6 +76,7 @@ const Navbar = () => {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
+              const isPrimary = 'isPrimary' in item && item.isPrimary;
 
               return (
                 <Button
@@ -82,7 +84,8 @@ const Navbar = () => {
                   variant={isActive ? "default" : "ghost"}
                   className={cn(
                     "gap-2",
-                    isActive && "shadow-sm"
+                    isActive && "shadow-sm",
+                    isPrimary && !isActive && "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold shadow-lg hover:shadow-xl transition-all"
                   )}
                   onClick={() => navigate(item.path)}
                 >
