@@ -30,16 +30,67 @@ serve(async (req) => {
         const response = await fetch(mapLink, {
           redirect: "follow",
           headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; Bot/1.0)",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
           },
         });
         const fullUrl = response.url;
-        
+
         // Parse coordinates from full URL
         const coordMatch = fullUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
         if (coordMatch) {
           lat = parseFloat(coordMatch[1]);
           lng = parseFloat(coordMatch[2]);
+        }
+
+        // If no coordinates in URL, try parsing from the response body
+        if (lat === null || lng === null) {
+          const body = await response.text();
+
+          // Try various patterns found in Google Maps HTML
+          // Pattern: [null,null,lat,lng]
+          const arrayMatch = body.match(/\[null,null,(-?\d+\.\d+),(-?\d+\.\d+)\]/);
+          if (arrayMatch) {
+            lat = parseFloat(arrayMatch[1]);
+            lng = parseFloat(arrayMatch[2]);
+          }
+
+          // Pattern: center=lat,lng or center=lat%2Clng
+          if (lat === null || lng === null) {
+            const centerMatch = body.match(/center[=:](-?\d+\.\d+)[,%]2C(-?\d+\.\d+)/i);
+            if (centerMatch) {
+              lat = parseFloat(centerMatch[1]);
+              lng = parseFloat(centerMatch[2]);
+            }
+          }
+
+          // Pattern: ll=lat,lng
+          if (lat === null || lng === null) {
+            const llMatch = body.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+            if (llMatch) {
+              lat = parseFloat(llMatch[1]);
+              lng = parseFloat(llMatch[2]);
+            }
+          }
+
+          // Pattern: @lat,lng in body
+          if (lat === null || lng === null) {
+            const atMatch = body.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+            if (atMatch) {
+              lat = parseFloat(atMatch[1]);
+              lng = parseFloat(atMatch[2]);
+            }
+          }
+
+          // Pattern: "lat":number,"lng":number or similar JSON patterns
+          if (lat === null || lng === null) {
+            const jsonMatch = body.match(/"lat"\s*:\s*(-?\d+\.\d+)\s*,\s*"lng"\s*:\s*(-?\d+\.\d+)/);
+            if (jsonMatch) {
+              lat = parseFloat(jsonMatch[1]);
+              lng = parseFloat(jsonMatch[2]);
+            }
+          }
         }
       } catch (err) {
         console.error("Error following redirect:", err);
