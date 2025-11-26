@@ -27,6 +27,7 @@ const Navbar = () => {
     {
       path: "/dashboard",
       label: "ข้อมูลผู้ต้องการความช่วยเหลือ",
+      shortLabel: "ข้อมูล",
       icon: Database,
       description: "ดูข้อมูลทั้งหมด",
     },
@@ -77,20 +78,22 @@ const Navbar = () => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               const isPrimary = 'isPrimary' in item && item.isPrimary;
+              const displayLabel = 'shortLabel' in item ? item.shortLabel : item.label;
 
               return (
                 <Button
                   key={item.path}
                   variant={isActive ? "default" : "ghost"}
                   className={cn(
-                    "gap-2",
+                    "gap-2 whitespace-nowrap text-sm lg:text-base",
                     isActive && "shadow-sm",
                     isPrimary && !isActive && "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold shadow-lg hover:shadow-xl transition-all"
                   )}
                   onClick={() => navigate(item.path)}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.label}</span>
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  <span className="hidden lg:inline">{item.label}</span>
+                  <span className="lg:hidden">{displayLabel}</span>
                 </Button>
               );
             })}
