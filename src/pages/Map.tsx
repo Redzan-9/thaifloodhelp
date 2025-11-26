@@ -18,6 +18,9 @@ const Map = () => {
     const [selectedUrgencyLevels, setSelectedUrgencyLevels] = useState<number[]>([
         1, 2, 3, 4, 5,
     ]);
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([
+        'pending', 'processed', 'completed',
+    ]);
     const [searchQuery, setSearchQuery] = useState('');
     const { toast } = useToast();
 
@@ -28,10 +31,25 @@ const Map = () => {
             const { data, error } = await supabase
                 .from('reports')
                 .select('*')
+                .not('location_lat', 'is', null)
+                .not('location_long', 'is', null)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
             return data as Report[];
+        },
+    });
+
+    // Fetch total count of all reports
+    const { data: totalCount } = useQuery({
+        queryKey: ['reports-count'],
+        queryFn: async () => {
+            const { count, error } = await supabase
+                .from('reports')
+                .select('*', { count: 'exact', head: true });
+
+            if (error) throw error;
+            return count || 0;
         },
     });
 
@@ -53,7 +71,8 @@ const Map = () => {
         }
 
         let filtered = reports.filter((report) =>
-            selectedUrgencyLevels.includes(report.urgency_level)
+            selectedUrgencyLevels.includes(report.urgency_level) &&
+            selectedStatuses.includes(report.status)
         );
 
         if (searchQuery.trim()) {
@@ -68,13 +87,21 @@ const Map = () => {
         }
 
         setFilteredReports(filtered);
-    }, [reports, selectedUrgencyLevels, searchQuery]);
+    }, [reports, selectedUrgencyLevels, selectedStatuses, searchQuery]);
 
     const toggleUrgencyLevel = (level: number) => {
         setSelectedUrgencyLevels((prev) =>
             prev.includes(level)
                 ? prev.filter((l) => l !== level)
                 : [...prev, level].sort()
+        );
+    };
+
+    const toggleStatus = (status: string) => {
+        setSelectedStatuses((prev) =>
+            prev.includes(status)
+                ? prev.filter((s) => s !== status)
+                : [...prev, status]
         );
     };
 
@@ -97,6 +124,12 @@ const Map = () => {
         3: allReportsWithLocation.filter((r) => r.urgency_level === 3).length,
         4: allReportsWithLocation.filter((r) => r.urgency_level === 4).length,
         5: allReportsWithLocation.filter((r) => r.urgency_level === 5).length,
+    };
+
+    const statusCounts = {
+        pending: allReportsWithLocation.filter((r) => r.status === 'pending').length,
+        processed: allReportsWithLocation.filter((r) => r.status === 'processed').length,
+        completed: allReportsWithLocation.filter((r) => r.status === 'completed').length,
     };
 
     if (isLoading) {
@@ -122,7 +155,7 @@ const Map = () => {
                         </h1>
                     </div>
                     <p className="text-sm text-gray-600">
-                        แสดงตำแหน่งผู้ประสบน้ำท่วม {reportsWithLocation.length} จุด
+                        แสดงตำแหน่งผู้ประสบน้ำท่วม {allReportsWithLocation.length} จุด
                     </p>
                 </div>
             </div>
@@ -151,6 +184,43 @@ const Map = () => {
                                     <X className="h-4 w-4" />
                                 </button>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Status Filter */}
+                    <div>
+                        <Label className="text-sm font-semibold mb-3 block">
+                            สถานะ
+                        </Label>
+                        <div className="space-y-2">
+                            {[
+                                { value: 'pending', label: 'รอดำเนินการ', color: '#EF4444' },
+                                { value: 'processed', label: 'กำลังดำเนินการ', color: '#F59E0B' },
+                                { value: 'completed', label: 'เสร็จสิ้น', color: '#10B981' },
+                            ].map((status) => (
+                                <div key={status.value} className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`status-${status.value}`}
+                                            checked={selectedStatuses.includes(status.value)}
+                                            onCheckedChange={() => toggleStatus(status.value)}
+                                        />
+                                        <Label
+                                            htmlFor={`status-${status.value}`}
+                                            className="cursor-pointer flex items-center gap-2"
+                                        >
+                                            <span
+                                                className={`w-3 h-3 rounded-full`}
+                                                style={{ backgroundColor: status.color }}
+                                            />
+                                            <span className="text-sm">{status.label}</span>
+                                        </Label>
+                                    </div>
+                                    <span className="text-xs text-gray-500">
+                                        ({statusCounts[status.value as keyof typeof statusCounts]})
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -204,12 +274,12 @@ const Map = () => {
                         <div className="space-y-1 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-gray-600">ทั้งหมด:</span>
-                                <span className="font-semibold">{reports?.length || 0}</span>
+                                <span className="font-semibold">{totalCount || 0}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">มีตำแหน่ง:</span>
                                 <span className="font-semibold">
-                                    {reportsWithLocation.length}
+                                    {allReportsWithLocation.length}
                                 </span>
                             </div>
                             <div className="flex justify-between">
@@ -229,6 +299,7 @@ const Map = () => {
                         className="w-full"
                         onClick={() => {
                             setSelectedUrgencyLevels([1, 2, 3, 4, 5]);
+                            setSelectedStatuses(['pending', 'processed', 'completed']);
                             setSearchQuery('');
                         }}
                     >
