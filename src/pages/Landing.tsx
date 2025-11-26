@@ -263,22 +263,22 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-24 md:py-32 px-4 bg-gray-50 dark:bg-gray-800">
+      {/* How It Works - Modern Minimal Style */}
+      <section className="py-24 md:py-32 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-20"
+            className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
               ใช้งานง่าย 3 ขั้นตอน
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
             {[
               {
                 step: "1",
@@ -301,22 +301,22 @@ const Landing = () => {
             ].map((item, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                className="bg-white dark:bg-gray-900 rounded-3xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-gray-700"
               >
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-8">
-                  <item.icon className="h-10 w-10 text-white" />
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-6">
+                  <item.icon className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
-                <div className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-blue-500 to-purple-600 mb-6 text-center">
+                <div className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-blue-500 to-purple-600 mb-6 text-center">
                   {item.step}
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-3 text-center">
                   {item.title}
                 </h3>
-                <p className="text-lg text-gray-600 dark:text-gray-400 text-center leading-relaxed">
+                <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 text-center leading-relaxed">
                   {item.description}
                 </p>
               </motion.div>
