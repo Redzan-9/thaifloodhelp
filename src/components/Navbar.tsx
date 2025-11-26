@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLiff } from "@/contexts/LiffContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sheet,
@@ -26,10 +27,16 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAdmin, signOut } = useAuth();
+  const { isLoggedIn, profile, logout: liffLogout } = useLiff();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
+    navigate("/");
+  };
+
+  const handleLiffLogout = () => {
+    liffLogout();
     navigate("/");
   };
 
@@ -138,7 +145,7 @@ const Navbar = () => {
                 </Button>
               );
             })}
-            
+
             {/* Auth Button */}
             {user ? (
               <DropdownMenu>
@@ -159,6 +166,30 @@ const Navbar = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    ออกจากระบบ
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : isLoggedIn && profile ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <Avatar className="h-8 w-8 border-2 border-[#06C755]">
+                      <AvatarImage src={profile.pictureUrl} alt={profile.displayName} />
+                      <AvatarFallback>
+                        {profile.displayName?.charAt(0).toUpperCase() || "L"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel className="flex items-center gap-2">
+                    {profile.displayName}
+                    <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full">LINE</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLiffLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     ออกจากระบบ
                   </DropdownMenuItem>
@@ -227,7 +258,7 @@ const Navbar = () => {
                       </Button>
                     );
                   })}
-                  
+
                   {/* Auth Button Mobile */}
                   <div className="mt-4 pt-4 border-t">
                     {user ? (
@@ -248,6 +279,33 @@ const Navbar = () => {
                           variant="ghost"
                           className="w-full justify-start gap-3 h-14"
                           onClick={handleSignOut}
+                        >
+                          <LogOut className="h-5 w-5" />
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">ออกจากระบบ</span>
+                          </div>
+                        </Button>
+                      </>
+                    ) : isLoggedIn && profile ? (
+                      <>
+                        <div className="px-4 py-2 flex items-center gap-3">
+                          <Avatar className="h-10 w-10 border-2 border-[#06C755]">
+                            <AvatarImage src={profile.pictureUrl} alt={profile.displayName} />
+                            <AvatarFallback>
+                              {profile.displayName?.charAt(0).toUpperCase() || "L"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="text-sm">
+                            <div className="font-medium flex items-center gap-2">
+                              {profile.displayName}
+                              <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full">LINE</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start gap-3 h-14"
+                          onClick={handleLiffLogout}
                         >
                           <LogOut className="h-5 w-5" />
                           <div className="flex flex-col items-start">
