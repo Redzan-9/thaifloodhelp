@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Code, Send, Copy, Check, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ApiKeyManager } from "@/components/ApiKeyManager";
 
 const Api = () => {
   const [ocrInput, setOcrInput] = useState("");
@@ -220,9 +221,11 @@ const Api = () => {
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            API เหล่านี้เป็นแบบ Public ไม่ต้องใช้ API Key แต่มีการจำกัดอัตราการเรียกใช้งาน
+            การใช้งาน API ต้องเข้าสู่ระบบและมี API Key พร้อมทั้งมีการจำกัดอัตราการเรียกใช้งานตาม Rate Limit ของแต่ละ Key
           </AlertDescription>
         </Alert>
+
+        <ApiKeyManager />
 
         <Card>
           <CardHeader>
@@ -258,7 +261,8 @@ const Api = () => {
                 <div className="space-y-2">
                   <h3 className="font-semibold">Headers</h3>
                   <pre className="bg-muted p-4 rounded text-sm">
-{`Content-Type: application/json`}
+{`Content-Type: application/json
+X-API-Key: your_api_key_here`}
                   </pre>
                 </div>
 
@@ -375,7 +379,8 @@ const Api = () => {
                 <div className="space-y-2">
                   <h3 className="font-semibold">Headers</h3>
                   <pre className="bg-muted p-4 rounded text-sm">
-{`Content-Type: application/json`}
+{`Content-Type: application/json
+X-API-Key: your_api_key_here`}
                   </pre>
                 </div>
 
@@ -469,7 +474,8 @@ const Api = () => {
                 <div className="space-y-2">
                   <h3 className="font-semibold">Headers</h3>
                   <pre className="bg-muted p-4 rounded text-sm">
-{`Content-Type: application/json`}
+{`Content-Type: application/json
+X-API-Key: your_api_key_here`}
                   </pre>
                 </div>
 
