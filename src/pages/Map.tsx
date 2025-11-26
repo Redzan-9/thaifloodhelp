@@ -30,7 +30,19 @@ const Map = () => {
         queryFn: async () => {
             const { data, error } = await supabase
                 .from('reports')
-                .select('*')
+                .select(`
+                    id,
+                    name,
+                    lastname,
+                    address,
+                    help_needed,
+                    phone,
+                    location_lat,
+                    location_long,
+                    urgency_level,
+                    status,
+                    created_at
+                `)
                 .not('location_lat', 'is', null)
                 .not('location_long', 'is', null)
                 .order('created_at', { ascending: false });
