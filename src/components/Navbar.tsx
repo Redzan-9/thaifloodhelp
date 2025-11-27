@@ -313,8 +313,8 @@ const Navbar = () => {
                   <div className="mt-4 pt-4 border-t">
                     {user ? (
                       <>
-                        <div className="px-4 py-2 flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
+                        <div className="px-4 py-3 flex items-center gap-3">
+                          <Avatar className="h-9 w-9">
                             <AvatarImage
                               src={
                                 user.user_metadata?.avatar_url ||
@@ -326,8 +326,13 @@ const Navbar = () => {
                               {user.email?.charAt(0).toUpperCase() || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="text-sm">
-                            <div className="font-medium">{user.email}</div>
+                          <div className="text-sm min-w-0 flex-1 leading-snug">
+                            <div
+                              className="font-medium break-words whitespace-normal"
+                              title={user.email}
+                            >
+                              {user.email}
+                            </div>
                             {isAdmin && (
                               <div className="text-xs text-muted-foreground">
                                 Admin
@@ -348,8 +353,8 @@ const Navbar = () => {
                       </>
                     ) : isLoggedIn && profile ? (
                       <>
-                        <div className="px-4 py-2 flex items-center gap-3">
-                          <Avatar className="h-10 w-10 border-2 border-[#06C755]">
+                        <div className="px-4 py-3 flex items-center gap-3">
+                          <Avatar className="h-9 w-9 border-2 border-[#06C755]">
                             <AvatarImage
                               src={profile.pictureUrl}
                               alt={profile.displayName}
@@ -359,10 +364,12 @@ const Navbar = () => {
                                 'L'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="text-sm">
-                            <div className="font-medium flex items-center gap-2">
-                              {profile.displayName}
-                              <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full">
+                          <div className="text-sm min-w-0 flex-1 leading-snug">
+                            <div className="font-medium flex items-center gap-2 min-w-0">
+                              <span className="break-words whitespace-normal">
+                                {profile.displayName}
+                              </span>
+                              <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full shrink-0">
                                 LINE
                               </span>
                             </div>
