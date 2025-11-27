@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MapPin, Phone, Clock, User, HandHeart, Users, Eye, List, Upload, X, Edit, Trash2, LogIn } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Clock, User, HandHeart, Users, Eye, List, Upload, X, Edit, Trash2, LogIn, ChevronDown, ChevronRight } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { th } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -44,12 +44,25 @@ export default function HelpBrowse() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'request-form' | 'offer-form' | 'view-requests' | 'view-offers'>('request-form');
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   
   useEffect(() => {
     if (!user && (activeTab === 'request-form' || activeTab === 'offer-form')) {
       toast.error('กรุณาเข้าสู่ระบบก่อนโพสต์');
     }
   }, [user, activeTab]);
+  
+  const toggleRow = (id: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
   
   const [requestForm, setRequestForm] = useState({
     title: '',
@@ -986,90 +999,118 @@ export default function HelpBrowse() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[50px]"></TableHead>
                       <TableHead className="w-[200px]">หัวข้อ</TableHead>
-                      <TableHead>รายละเอียด</TableHead>
-                      <TableHead className="w-[150px]">ประเภท</TableHead>
+                      <TableHead>รายละเอียด (สั้น)</TableHead>
                       <TableHead className="w-[150px]">ชื่อผู้ติดต่อ</TableHead>
                       <TableHead className="w-[120px]">เบอร์โทร</TableHead>
-                      <TableHead className="w-[200px]">ที่อยู่</TableHead>
-                      <TableHead className="w-[100px]">งบประมาณ</TableHead>
                       <TableHead className="w-[100px]">สถานะ</TableHead>
                       <TableHead className="w-[120px]">เวลา</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {helpRequests.map((request) => (
-                      <TableRow key={request.id}>
-                        <TableCell className="font-medium">{request.title}</TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
+                      <>
+                        <TableRow 
+                          key={request.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => toggleRow(request.id)}
+                        >
+                          <TableCell>
+                            {expandedRows.has(request.id) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </TableCell>
+                          <TableCell className="font-medium">{request.title}</TableCell>
+                          <TableCell>
                             <p className="text-sm line-clamp-2">{request.description}</p>
-                            {request.image_urls && request.image_urls.length > 0 && (
-                              <div className="flex gap-1">
-                                {request.image_urls.slice(0, 3).map((url: string, idx: number) => (
-                                  <img
-                                    key={idx}
-                                    src={url}
-                                    alt={`รูปภาพ ${idx + 1}`}
-                                    className="w-12 h-12 object-cover rounded border cursor-pointer hover:opacity-80"
-                                    onClick={() => window.open(url, '_blank')}
-                                  />
-                                ))}
-                                {request.image_urls.length > 3 && (
-                                  <div className="w-12 h-12 rounded border bg-muted flex items-center justify-center text-xs">
-                                    +{request.image_urls.length - 3}
+                          </TableCell>
+                          <TableCell>{request.contact_name}</TableCell>
+                          <TableCell className="text-sm">
+                            {request.contact_phone && request.contact_phone.length > 0
+                              ? request.contact_phone[0]
+                              : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="destructive" className="text-xs">
+                              เปิด
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {formatDistanceToNow(new Date(request.created_at!), {
+                              addSuffix: true,
+                              locale: th
+                            })}
+                          </TableCell>
+                        </TableRow>
+                        {expandedRows.has(request.id) && (
+                          <TableRow key={`${request.id}-expanded`}>
+                            <TableCell colSpan={7} className="bg-muted/30">
+                              <div className="p-4 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <h4 className="font-semibold mb-2">ข้อมูลทั่วไป</h4>
+                                    <div className="space-y-2 text-sm">
+                                      <div><span className="font-medium">หัวข้อ:</span> {request.title}</div>
+                                      <div><span className="font-medium">รายละเอียด:</span> {request.description}</div>
+                                      {request.help_types && request.help_types.length > 0 && (
+                                        <div>
+                                          <span className="font-medium">ประเภทความช่วยเหลือ:</span>
+                                          <div className="flex flex-wrap gap-2 mt-1">
+                                            {request.help_types.map((type: string) => (
+                                              <Badge key={type} variant="secondary" className="text-xs">
+                                                {type}
+                                              </Badge>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {request.budget && (
+                                        <div><span className="font-medium">งบประมาณ:</span> {request.budget}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold mb-2">ข้อมูลติดต่อ</h4>
+                                    <div className="space-y-2 text-sm">
+                                      <div><span className="font-medium">ชื่อผู้ติดต่อ:</span> {request.contact_name}</div>
+                                      {request.contact_phone && request.contact_phone.length > 0 && (
+                                        <div>
+                                          <span className="font-medium">เบอร์โทร:</span> {request.contact_phone.join(', ')}
+                                        </div>
+                                      )}
+                                      {request.contact_method && (
+                                        <div><span className="font-medium">ช่องทางติดต่อ:</span> {request.contact_method}</div>
+                                      )}
+                                      {request.location_address && (
+                                        <div><span className="font-medium">ที่อยู่:</span> {request.location_address}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {request.image_urls && request.image_urls.length > 0 && (
+                                  <div>
+                                    <h4 className="font-semibold mb-2">รูปภาพ</h4>
+                                    <div className="flex gap-2 flex-wrap">
+                                      {request.image_urls.map((url: string, idx: number) => (
+                                        <img
+                                          key={idx}
+                                          src={url}
+                                          alt={`รูปภาพ ${idx + 1}`}
+                                          className="w-32 h-32 object-cover rounded border cursor-pointer hover:opacity-80"
+                                          onClick={() => window.open(url, '_blank')}
+                                        />
+                                      ))}
+                                    </div>
                                   </div>
                                 )}
                               </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {request.help_types && request.help_types.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {request.help_types.slice(0, 2).map((type: string) => (
-                                <Badge key={type} variant="secondary" className="text-xs">
-                                  {type}
-                                </Badge>
-                              ))}
-                              {request.help_types.length > 2 && (
-                                <Badge variant="secondary" className="text-xs">
-                                  +{request.help_types.length - 2}
-                                </Badge>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>{request.contact_name}</TableCell>
-                        <TableCell className="text-sm">
-                          {request.contact_phone && request.contact_phone.length > 0
-                            ? request.contact_phone[0]
-                            : '-'}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {request.location_address ? (
-                            <span className="line-clamp-2">{request.location_address}</span>
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {request.budget || '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="destructive" className="text-xs">
-                            เปิด
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {formatDistanceToNow(new Date(request.created_at!), {
-                            addSuffix: true,
-                            locale: th
-                          })}
-                        </TableCell>
-                      </TableRow>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </>
                     ))}
                   </TableBody>
                 </Table>
@@ -1090,70 +1131,118 @@ export default function HelpBrowse() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[50px]"></TableHead>
                       <TableHead className="w-[150px]">ชื่อ</TableHead>
-                      <TableHead>รายละเอียด</TableHead>
+                      <TableHead>รายละเอียด (สั้น)</TableHead>
                       <TableHead className="w-[150px]">บริการที่ให้</TableHead>
-                      <TableHead className="w-[120px]">ความสามารถ</TableHead>
-                      <TableHead className="w-[120px]">ทักษะ</TableHead>
                       <TableHead className="w-[150px]">ติดต่อ</TableHead>
-                      <TableHead className="w-[120px]">พื้นที่</TableHead>
-                      <TableHead className="w-[120px]">ช่วงเวลา</TableHead>
                       <TableHead className="w-[100px]">สถานะ</TableHead>
                       <TableHead className="w-[120px]">เวลา</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {helpOffers.map((offer) => (
-                      <TableRow key={offer.id}>
-                        <TableCell className="font-medium">{offer.name}</TableCell>
-                        <TableCell>
-                          <p className="text-sm line-clamp-2">{offer.description}</p>
-                        </TableCell>
-                        <TableCell>
-                          {offer.services_offered && offer.services_offered.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {offer.services_offered.slice(0, 2).map((service: string) => (
-                                <Badge key={service} variant="secondary" className="text-xs">
-                                  {service}
-                                </Badge>
-                              ))}
-                              {offer.services_offered.length > 2 && (
-                                <Badge variant="secondary" className="text-xs">
-                                  +{offer.services_offered.length - 2}
-                                </Badge>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {offer.capacity || '-'}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {offer.skills || '-'}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {offer.contact_info}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {offer.location_area || '-'}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {offer.availability || '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className="text-xs bg-green-500">
-                            พร้อม
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {formatDistanceToNow(new Date(offer.created_at!), {
-                            addSuffix: true,
-                            locale: th
-                          })}
-                        </TableCell>
-                      </TableRow>
+                      <>
+                        <TableRow 
+                          key={offer.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => toggleRow(offer.id)}
+                        >
+                          <TableCell>
+                            {expandedRows.has(offer.id) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </TableCell>
+                          <TableCell className="font-medium">{offer.name}</TableCell>
+                          <TableCell>
+                            <p className="text-sm line-clamp-2">{offer.description}</p>
+                          </TableCell>
+                          <TableCell>
+                            {offer.services_offered && offer.services_offered.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {offer.services_offered.slice(0, 2).map((service: string) => (
+                                  <Badge key={service} variant="secondary" className="text-xs">
+                                    {service}
+                                  </Badge>
+                                ))}
+                                {offer.services_offered.length > 2 && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    +{offer.services_offered.length - 2}
+                                  </Badge>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {offer.contact_info}
+                          </TableCell>
+                          <TableCell>
+                            <Badge className="text-xs bg-green-500">
+                              พร้อม
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {formatDistanceToNow(new Date(offer.created_at!), {
+                              addSuffix: true,
+                              locale: th
+                            })}
+                          </TableCell>
+                        </TableRow>
+                        {expandedRows.has(offer.id) && (
+                          <TableRow key={`${offer.id}-expanded`}>
+                            <TableCell colSpan={7} className="bg-muted/30">
+                              <div className="p-4 space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <h4 className="font-semibold mb-2">ข้อมูลทั่วไป</h4>
+                                    <div className="space-y-2 text-sm">
+                                      <div><span className="font-medium">ชื่อ:</span> {offer.name}</div>
+                                      <div><span className="font-medium">รายละเอียด:</span> {offer.description}</div>
+                                      {offer.services_offered && offer.services_offered.length > 0 && (
+                                        <div>
+                                          <span className="font-medium">บริการที่ให้:</span>
+                                          <div className="flex flex-wrap gap-2 mt-1">
+                                            {offer.services_offered.map((service: string) => (
+                                              <Badge key={service} variant="secondary" className="text-xs">
+                                                {service}
+                                              </Badge>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {offer.capacity && (
+                                        <div><span className="font-medium">ความสามารถ:</span> {offer.capacity}</div>
+                                      )}
+                                      {offer.skills && (
+                                        <div><span className="font-medium">ทักษะ:</span> {offer.skills}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold mb-2">ข้อมูลติดต่อและพื้นที่</h4>
+                                    <div className="space-y-2 text-sm">
+                                      <div><span className="font-medium">ติดต่อ:</span> {offer.contact_info}</div>
+                                      {offer.contact_method && (
+                                        <div><span className="font-medium">ช่องทางติดต่อ:</span> {offer.contact_method}</div>
+                                      )}
+                                      {offer.location_area && (
+                                        <div><span className="font-medium">พื้นที่:</span> {offer.location_area}</div>
+                                      )}
+                                      {offer.availability && (
+                                        <div><span className="font-medium">ช่วงเวลา:</span> {offer.availability}</div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </>
                     ))}
                   </TableBody>
                 </Table>
