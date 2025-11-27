@@ -326,8 +326,8 @@ const Navbar = () => {
                               {user.email?.charAt(0).toUpperCase() || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="text-sm min-w-0 flex-1 leading-snug">
-                            <div className="font-medium break-all">
+                          <div className="text-sm min-w-0 flex-1 leading-tight">
+                            <div className="font-medium truncate" title={user.email}>
                               {user.email}
                             </div>
                             {isAdmin && (
@@ -361,9 +361,12 @@ const Navbar = () => {
                                 'L'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="text-sm min-w-0 flex-1 leading-snug">
+                          <div className="text-sm min-w-0 flex-1 leading-tight">
                             <div className="font-medium flex items-center gap-2 min-w-0">
-                              <span className="truncate max-w-[160px]">
+                              <span
+                                className="truncate max-w-[160px]"
+                                title={profile.displayName}
+                              >
                                 {profile.displayName}
                               </span>
                               <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full shrink-0">
