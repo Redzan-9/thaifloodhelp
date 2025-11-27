@@ -6,7 +6,7 @@ import heroFlood from '@/assets/hero-flood.jpg'
 import { Button } from '@/components/ui/button'
 import { useLandingStats } from '@/hooks/use-stats'
 import { useHelpStats } from '@/hooks/use-help-stats'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 
@@ -24,6 +24,7 @@ const Landing = () => {
   const { data: helpStats = { helpRequestsCount: 0, helpOffersCount: 0 } } = useHelpStats();
   
   const [mode, setMode] = useState<'during' | 'after'>('during');
+  
   const containerVariants = {
     hidden: {
       opacity: 0
@@ -35,6 +36,7 @@ const Landing = () => {
       }
     }
   };
+  
   const itemVariants = {
     hidden: {
       y: 30,
@@ -45,34 +47,6 @@ const Landing = () => {
       opacity: 1,
     },
   }
-
-  const [hatyaiRainfall, setHatyaiRainfall] = useState<number | string>('กำลังโหลด...')
-
-  useEffect(() => {
-    let mounted = true
-
-    const fetchRainfall = async () => {
-      try {
-        const res = await fetch(
-          'https://api.open-meteo.com/v1/forecast?latitude=7.0084&longitude=100.4767&current=precipitation&timezone=Asia%2FBangkok&forecast_days=1'
-        )
-        const data = await res.json()
-        const rainfall = data?.current?.precipitation ?? 'N/A'
-        if (mounted) setHatyaiRainfall(rainfall)
-      } catch (error) {
-        console.error('Error fetching rainfall data:', error)
-        if (mounted) setHatyaiRainfall('N/A')
-      }
-    }
-
-    fetchRainfall()
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  const getHatyaiRainfall = () => hatyaiRainfall
 
   return (
     <div className="min-h-screen">
@@ -139,13 +113,6 @@ const Landing = () => {
               </motion.p>
             </>
           )}
-
-          <motion.p
-            variants={itemVariants}
-            className="text-sm sm:text-base md:text-lg text-white/90 mb-4 md:mb-6 px-4 drop-shadow-md [text-shadow:_0_1px_6px_rgb(0_0_0_/_50%)]"
-          >
-            หาดใหญ่ ปริมาณน้ำฝนรายชั่วโมง {getHatyaiRainfall()} มม.
-          </motion.p>
 
           {/* Technology Badges */}
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-6 md:mb-8 text-xs sm:text-sm px-4">
