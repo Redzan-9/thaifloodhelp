@@ -260,7 +260,10 @@ const Navbar = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] overflow-y-auto">
+              <SheetContent
+                side="right"
+                className="w-[90vw] max-w-sm overflow-y-auto"
+              >
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <img src={logo} alt="Logo" className="h-6 w-6" />
@@ -326,8 +329,10 @@ const Navbar = () => {
                               {user.email?.charAt(0).toUpperCase() || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="text-sm">
-                            <div className="font-medium">{user.email}</div>
+                          <div className="text-sm min-w-0 flex-1 leading-snug">
+                            <div className="font-medium break-all">
+                              {user.email}
+                            </div>
                             {isAdmin && (
                               <div className="text-xs text-muted-foreground">
                                 Admin
@@ -359,10 +364,12 @@ const Navbar = () => {
                                 'L'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="text-sm">
-                            <div className="font-medium flex items-center gap-2">
-                              {profile.displayName}
-                              <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full">
+                          <div className="text-sm min-w-0 flex-1 leading-snug">
+                            <div className="font-medium flex items-center gap-2 min-w-0">
+                              <span className="truncate max-w-[160px]">
+                                {profile.displayName}
+                              </span>
+                              <span className="text-[10px] bg-[#06C755] text-white px-1.5 py-0.5 rounded-full shrink-0">
                                 LINE
                               </span>
                             </div>
