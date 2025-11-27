@@ -79,6 +79,11 @@ const InteractiveMap = ({
         markersRef.current.refreshClusters()
       }
     }
+
+    // Always bring markers to front
+    if (markersRef.current.bringToFront) {
+      markersRef.current.bringToFront()
+    }
   }
 
   // Ensure flood overlay stays mounted when swapping basemaps
@@ -92,6 +97,31 @@ const InteractiveMap = ({
     } else if (floodLayerRef.current.bringToFront) {
       floodLayerRef.current.bringToFront()
     }
+  }
+
+  // Ensure all KML layers maintain proper ordering
+  const ensureKMLLayersOrdering = () => {
+    // Order from bottom to top: basemap -> flood layer -> flood depth -> rescue zone -> markers
+    if (floodLayerRef.current && mapRef.current?.hasLayer(floodLayerRef.current)) {
+      if (floodLayerRef.current.bringToBack) {
+        floodLayerRef.current.bringToBack()
+      }
+    }
+
+    if (floodDepthLayerRef.current && mapRef.current?.hasLayer(floodDepthLayerRef.current)) {
+      if (floodDepthLayerRef.current.bringToBack) {
+        floodDepthLayerRef.current.bringToBack()
+      }
+    }
+
+    if (rescueZoneLayerRef.current && mapRef.current?.hasLayer(rescueZoneLayerRef.current)) {
+      if (rescueZoneLayerRef.current.bringToBack) {
+        rescueZoneLayerRef.current.bringToBack()
+      }
+    }
+
+    // Markers always on top
+    ensureMarkersOnMap()
   }
 
   useEffect(() => {
@@ -209,9 +239,11 @@ const InteractiveMap = ({
 
     basemapLayerRef.current = newBasemapLayer
 
-    // Basemap swaps can occasionally unset overlay layers; make sure markers stay mounted
-    ensureMarkersOnMap()
+    // Basemap swaps can occasionally unset overlay layers; make sure all layers stay mounted
     ensureFloodLayerOnMap()
+    setTimeout(() => {
+      ensureKMLLayersOrdering()
+    }, 100)
   }, [selectedBasemap])
 
   // Handle flood layer toggle
@@ -248,8 +280,10 @@ const InteractiveMap = ({
       }
     }
 
-    // Flood layer add/remove can occasionally reorder panes; ensure markers remain visible
-    ensureMarkersOnMap()
+    // Flood layer add/remove can occasionally reorder panes; ensure proper layer ordering
+    setTimeout(() => {
+      ensureKMLLayersOrdering()
+    }, 100)
   }, [showFloodLayer])
 
   // Handle flood depth layer (KML) toggle
@@ -262,10 +296,15 @@ const InteractiveMap = ({
         const layer = omnivore
           .kml('/data/poly_s1a_20251124_0602.kml')
           .on('ready', function (this: any) {
-            // Style the polygons based on depth
-            this.eachLayer((layer: any) => {
-              if (layer.feature && layer.feature.properties) {
-                const name = layer.feature.properties.name || ''
+            // Move all layers to floodDepthPane
+            this.eachLayer((sublayer: any) => {
+              // Set the pane for each sublayer
+              if (sublayer.options) {
+                sublayer.options.pane = 'floodDepthPane'
+              }
+
+              if (sublayer.feature && sublayer.feature.properties) {
+                const name = sublayer.feature.properties.name || ''
                 // Parse depth value from name
                 const depth = parseFloat(name)
 
@@ -289,20 +328,19 @@ const InteractiveMap = ({
                   }
                 }
 
-                layer.setStyle({
+                sublayer.setStyle({
                   fillColor: color,
                   fillOpacity: opacity,
                   color: color,
                   weight: 1,
                   opacity: 0.6,
-                  pane: 'floodDepthPane',
                 })
 
                 // Add popup with depth info
                 const depthText = !isNaN(depth)
                   ? `${depth.toFixed(2)} เมตร`
                   : 'ไม่ทราบ'
-                layer.bindPopup(`
+                sublayer.bindPopup(`
                   <div style="padding: 8px;">
                     <strong>ความลึกน้ำท่วม</strong><br/>
                     <span style="font-size: 16px; color: ${color}; font-weight: bold;">${depthText}</span><br/>
@@ -311,6 +349,11 @@ const InteractiveMap = ({
                 `)
               }
             })
+
+            // Ensure proper layer ordering after KML loads
+            setTimeout(() => {
+              ensureKMLLayersOrdering()
+            }, 100)
           })
           .addTo(mapRef.current)
 
@@ -327,10 +370,13 @@ const InteractiveMap = ({
       }
     }
 
-    ensureMarkersOnMap()
+    // Ensure proper ordering after layer changes
+    setTimeout(() => {
+      ensureKMLLayersOrdering()
+    }, 200)
   }, [showFloodDepthLayer])
 
-  // Handle rescue zone layer (KMZ) toggle
+  // Handle rescue zone layer (KML) toggle
   useEffect(() => {
     if (!mapRef.current) return
 
@@ -338,25 +384,30 @@ const InteractiveMap = ({
       // Add rescue zone layer if it doesn't exist
       if (!rescueZoneLayerRef.current) {
         const layer = omnivore
-          .kmz('/data/Hat_Yai_Rescue.kmz')
+          .kml('/data/Hat_Yai_Rescue.kml')
           .on('ready', function (this: any) {
             // Style the rescue zones
-            this.eachLayer((layer: any) => {
-              if (layer.feature && layer.feature.properties) {
-                layer.setStyle({
+            this.eachLayer((sublayer: any) => {
+              // Set the pane for each sublayer
+              if (sublayer.options) {
+                sublayer.options.pane = 'rescueZonePane'
+              }
+
+              if (sublayer.feature && sublayer.feature.properties) {
+                sublayer.setStyle({
                   fillColor: '#f97316',
                   fillOpacity: 0.25,
                   color: '#f97316',
                   weight: 2,
                   opacity: 0.7,
-                  pane: 'rescueZonePane',
                 })
 
                 // Add popup with zone info
-                const name = layer.feature.properties.name || 'โซนช่วยเหลือ'
+                const name =
+                  sublayer.feature.properties.name || 'โซนช่วยเหลือ'
                 const description =
-                  layer.feature.properties.description || ''
-                layer.bindPopup(`
+                  sublayer.feature.properties.description || ''
+                sublayer.bindPopup(`
                   <div style="padding: 8px;">
                     <strong>${name}</strong><br/>
                     ${description ? `<p style="margin-top: 4px; font-size: 13px;">${description}</p>` : ''}
@@ -365,6 +416,11 @@ const InteractiveMap = ({
                 `)
               }
             })
+
+            // Ensure proper layer ordering after KML loads
+            setTimeout(() => {
+              ensureKMLLayersOrdering()
+            }, 100)
           })
           .addTo(mapRef.current)
 
@@ -381,7 +437,10 @@ const InteractiveMap = ({
       }
     }
 
-    ensureMarkersOnMap()
+    // Ensure proper ordering after layer changes
+    setTimeout(() => {
+      ensureKMLLayersOrdering()
+    }, 200)
   }, [showRescueZoneLayer])
 
   // Update markers when reports change
