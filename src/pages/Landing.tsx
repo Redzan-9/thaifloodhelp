@@ -109,13 +109,13 @@ const Landing = () => {
           {/* Technology Badges */}
           <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-6 md:mb-8 text-xs sm:text-sm px-4">
             <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-medium border border-white/30 whitespace-nowrap">
-              🎧 Social Listening
+              🤖 Generative AI
             </div>
             <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-medium border border-white/30 whitespace-nowrap">
-              👥 Crowd Sourcing
+              🔍 Search Engine
             </div>
             <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-md rounded-full text-white font-medium border border-white/30 whitespace-nowrap">
-              🤖 AI Technology
+              🎯 AI matching
             </div>
           </motion.div>
 
