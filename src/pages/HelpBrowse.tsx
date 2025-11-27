@@ -302,6 +302,46 @@ export default function HelpBrowse() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2">
+                      <Upload className="w-4 h-4 inline mr-1" />
+                      อัพโหลดรูปภาพ (ถ้ามี)
+                    </label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setRequestForm({ ...requestForm, imageFiles: files });
+                      }}
+                      className="cursor-pointer"
+                    />
+                    {requestForm.imageFiles.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {requestForm.imageFiles.map((file, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Preview ${index + 1}`}
+                              className="w-20 h-20 object-cover rounded border"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newFiles = requestForm.imageFiles.filter((_, i) => i !== index);
+                                setRequestForm({ ...requestForm, imageFiles: newFiles });
+                              }}
+                              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
                       รายละเอียด <span className="text-destructive">*</span>
                     </label>
                     <Textarea
@@ -389,46 +429,6 @@ export default function HelpBrowse() {
                       placeholder="ที่อยู่หรือสถานที่ที่ต้องการความช่วยเหลือ"
                       rows={3}
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      <Upload className="w-4 h-4 inline mr-1" />
-                      อัพโหลดรูปภาพ (ถ้ามี)
-                    </label>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={(e) => {
-                        const files = Array.from(e.target.files || []);
-                        setRequestForm({ ...requestForm, imageFiles: files });
-                      }}
-                      className="cursor-pointer"
-                    />
-                    {requestForm.imageFiles.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {requestForm.imageFiles.map((file, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`Preview ${index + 1}`}
-                              className="w-20 h-20 object-cover rounded border"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const newFiles = requestForm.imageFiles.filter((_, i) => i !== index);
-                                setRequestForm({ ...requestForm, imageFiles: newFiles });
-                              }}
-                              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <Button
